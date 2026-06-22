@@ -1,0 +1,1 @@
+@keyframes pulse-faint{0%,to{opacity:.8;transform:scale(1)}50%{opacity:.95;transform:scale(1.02)}}.animate-pulse-faint{animation:pulse-faint 10s ease-in-out infinite}
