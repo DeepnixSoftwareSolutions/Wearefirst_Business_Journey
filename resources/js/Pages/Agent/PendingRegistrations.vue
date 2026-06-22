@@ -2,6 +2,9 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
+import { useConfirm } from '@/Composables/useConfirm';
+
+const { confirmAction } = useConfirm();
 
 const props = defineProps({ pendingStudents: Array });
 const searchQuery = ref('');
@@ -187,6 +190,18 @@ const submitEdit = () => {
     });
 };
 
+const voidRegistration = async (studentId, studentName) => {
+    const confirmed = await confirmAction({
+        title: 'Delete Registration',
+        message: `Are you sure you want to permanently delete the registration for ${studentName}? This will instantly free up their reserved slot on your network tree.`,
+        confirmText: 'Yes, Delete It',
+        confirmButtonTheme: 'danger'
+    });
+    if (confirmed) {
+        useForm({}).delete(`/agent/void-registration/${studentId}`, { preserveScroll: true });
+    }
+};
+
 const formatId = (id) => id ? String(id).padStart(4, '0') : '';
 
 const getPlacementDisplay = (student) => {
@@ -247,18 +262,26 @@ const getPlacementDisplay = (student) => {
                                 </td>
                                 <td class="p-4 text-right pr-6 space-y-2">
                                     <div>
-                                        <span v-if="student.admission_status === 'Pending Payment'" class="text-[10px] uppercase font-bold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-1 rounded shadow-sm">
+                                        <span v-if="student.admission_status === 'Pending Payment'" class="text-[10px] uppercase font-bold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-1 rounded shadow-sm block text-center mb-2">
                                             Awaiting Payment
                                         </span>
-                                        <span v-else-if="student.admission_status === 'Pending Approval'" class="text-[10px] uppercase font-bold text-blue-600 bg-blue-50 border border-blue-200 px-2 py-1 rounded shadow-sm">
+                                        <span v-else-if="student.admission_status === 'Pending Approval'" class="text-[10px] uppercase font-bold text-blue-600 bg-blue-50 border border-blue-200 px-2 py-1 rounded shadow-sm block text-center mb-2">
                                             Under Review
                                         </span>
-                                        <span v-else-if="student.admission_status === 'Rejected'" class="text-[10px] uppercase font-bold text-rose-600 bg-rose-50 border border-rose-200 px-2 py-1 rounded shadow-sm">
+                                        <span v-else-if="student.admission_status === 'Rejected'" class="text-[10px] uppercase font-bold text-rose-600 bg-rose-50 border border-rose-200 px-2 py-1 rounded shadow-sm block text-center mb-2">
                                             Rejected
                                         </span>
                                     </div>
-                                    <button @click="openEdit(student)" class="bg-slate-900 hover:bg-teal-600 text-white font-bold py-1.5 px-3 text-xs rounded-lg shadow-sm transition">
+                                    
+                                    <button @click="openEdit(student)" class="w-full bg-slate-900 hover:bg-teal-600 text-white font-bold py-1.5 px-3 text-xs rounded-lg shadow-sm transition">
                                         Edit Details
+                                    </button>
+
+                                    <button v-if="['Pending Payment', 'Rejected'].includes(student.admission_status)"
+                                            @click="voidRegistration(student.id, student.name)"
+                                            class="w-full bg-rose-50 hover:bg-rose-500 hover:text-white text-rose-600 border border-rose-200 font-bold text-xs py-1.5 px-3 rounded-lg transition flex items-center justify-center gap-1">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                        Delete
                                     </button>
                                 </td>
                             </tr>

@@ -199,4 +199,24 @@ class StudentRegistrationController extends Controller
 
         return back()->with('success', 'Pending student details updated successfully.');
     }
+
+    /**
+     * Hard Delete a pending registration and free up the tree node
+     */
+    public function voidRegistration(User $student)
+    {
+        // 1. Security Check: Ensure the agent owns this registration OR the user is an Admin
+        if ($student->registered_by_agent_id !== Auth::id() && Auth::user()->role !== 'Admin') {
+            return back()->withErrors(['error' => 'Unauthorized: You are not the sponsor of this student.']);
+        }
+
+        // 2. State Check: Only allow deletion if no payment is currently under review
+        if (!in_array($student->admission_status, ['Pending Payment', 'Rejected'])) {
+            return back()->withErrors(['error' => 'This registration cannot be deleted because a payment is currently under review or it is already active.']);
+        }
+
+        $student->delete();
+
+        return back()->with('success', 'Registration permanently voided. The tree slot is now available.');
+    }
 }

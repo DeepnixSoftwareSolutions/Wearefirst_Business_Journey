@@ -207,18 +207,4 @@ class ApprovalController extends Controller
 
         return back()->with('success', 'Initial registration payment rejected. The agent has been notified.');
     }
-
-    /**
-     * Hard Delete a pending registration and free up the tree node
-     */
-    public function voidRegistration(User $student)
-    {
-        if (!in_array($student->admission_status, ['Pending Payment', 'Pending Approval', 'Rejected'])) {
-            return back()->withErrors(['error' => 'Active students cannot be voided.']);
-        }
-
-        $student->delete();
-
-        return back()->with('success', 'Registration permanently voided. The tree slot is now available.');
-    }
 }
