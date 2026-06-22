@@ -54,16 +54,6 @@ const rejectStudent = async (studentId) => {
     if (confirmed) form.post(`/accountant/reject-student/${studentId}`);
 };
 
-const voidRegistration = async (studentId) => {
-    const confirmed = await confirmAction({
-        title: 'Void & Delete Registration',
-        message: 'WARNING: This will permanently delete the pending registration and free up the tree slot.',
-        confirmText: 'Delete Registration',
-        confirmButtonTheme: 'danger'
-    });
-    if (confirmed) form.delete(`/accountant/void-registration/${studentId}`);
-};
-
 const formatId = (id) => id ? String(id).padStart(4, '0') : '';
 
 const getPlacementDisplay = (student) => {
@@ -180,12 +170,6 @@ const getPlacementDisplay = (student) => {
                                                 </button>
                                             </div>
                                         </template>
-                                        <div v-if="student.admission_status !== 'Active'">
-                                            <button @click="voidRegistration(student.id)" 
-                                                    class="inline-block bg-white hover:bg-slate-800 text-slate-500 hover:text-white border border-slate-200 font-bold text-xs py-2 px-4 rounded-xl transition whitespace-nowrap">
-                                                Void & Delete Slot
-                                            </button>
-                                        </div>
                                     </td>
                                 </tr>
                             </tbody>

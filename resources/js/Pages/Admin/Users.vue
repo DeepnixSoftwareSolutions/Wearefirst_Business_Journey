@@ -111,10 +111,14 @@ const unlockLegs = async (id) => {
 };
 
 const deleteUser = async (id) => {
+    const isActive = viewingUser.value?.admission_status === 'Active';
+    
     const confirmed = await confirmAction({
-        title: 'Terminate Account',
-        message: 'WARNING: This will anonymize the user and freeze their nodes permanently. Proceed?',
-        confirmText: 'Terminate Permanently',
+        title: isActive ? 'Terminate Account' : 'Delete User Permanently',
+        message: isActive 
+            ? 'WARNING: This will anonymize the user and freeze their nodes permanently. Proceed?'
+            : 'WARNING: This will permanently wipe this pending registration from the database and free up their tree slot. Proceed?',
+        confirmText: isActive ? 'Terminate Permanently' : 'Wipe From Database',
         confirmButtonTheme: 'danger'
     });
 
@@ -476,11 +480,24 @@ const getPlacementString = (user) => {
                         </div>
                     </div>
 
-                    <div class="pt-4 pb-8 border-t border-slate-200">
+                    <div v-if="viewingUser.admission_status === 'Active'" class="pt-4 pb-8 border-t border-slate-200">
                         <button @click="deleteUser(viewingUser.id)" class="w-full py-4 bg-rose-50 text-rose-600 border border-rose-100 rounded-2xl font-bold text-sm hover:bg-rose-600 hover:text-white transition">
                             Terminate Account Permanently
                         </button>
                         <p class="text-[10px] text-center text-slate-400 mt-2 italic">This action will anonymize the user and freeze the node.</p>
+                    </div>
+
+                    <div v-else-if="['Pending Payment', 'Rejected'].includes(viewingUser.admission_status)" class="pt-4 pb-8 border-t border-slate-200">
+                        <button @click="deleteUser(viewingUser.id)" class="w-full py-4 bg-rose-50 hover:bg-rose-500 hover:text-white text-rose-600 border border-rose-200 rounded-2xl font-bold text-sm transition">
+                            Delete User Permanently
+                        </button>
+                        <p class="text-[10px] text-center text-slate-400 mt-2 italic">This action will completely wipe the user from the database and free their slot.</p>
+                    </div>
+
+                    <div v-else class="pt-4 pb-8 border-t border-slate-200 text-center">
+                        <p class="text-xs font-bold text-rose-500 bg-rose-50 border border-rose-100 p-3 rounded-xl">
+                            ⚠️ This student has a payment under review. Please ask the Accountant to reject the payment slip before deleting.
+                        </p>
                     </div>
 
                 </div>

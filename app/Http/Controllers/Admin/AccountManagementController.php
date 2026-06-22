@@ -78,19 +78,30 @@ class AccountManagementController extends Controller
             return back()->withErrors(['error' => 'Cannot delete Admin or Manager accounts.']);
         }
 
-        // 1. Anonymize the data to free up the NIC/Email for future use if needed
+        // PATH 1: Hard Delete for unpaid/rejected students
+        if (in_array($user->admission_status, ['Pending Payment', 'Rejected'])) {
+            $user->delete();
+            return back()->with('success', 'Pending registration permanently wiped from the database. The tree slot is now available.');
+        }
+
+        // PATH 2: Lock if payment is actively under review
+        if ($user->admission_status === 'Pending Approval') {
+            return back()->withErrors(['error' => 'Cannot delete a student with an unverified payment. The payment must be rejected by an Accountant first.']);
+        }
+
+        // PATH 3: Soft Delete (Anonymize) for Active agents to preserve network structure
         $randomHash = uniqid();
         $user->update([
             'name' => 'Terminated Account',
             'email' => "deleted_{$randomHash}@wearefirst.lk",
             'nic' => "DELETED_{$randomHash}",
             'phone' => '0000000000',
-            'password' => bcrypt(str()->random(20)), // Scramble password so they can never log in
-            'is_held' => true, // Ensure no money is ever paid to this node again
-            'role' => 'Student' // Strip their agent status
+            'password' => bcrypt(str()->random(20)), 
+            'is_held' => true, 
+            'role' => 'Student' 
         ]);
 
-        return back()->with('success', 'User safely terminated. Tree structure preserved.');
+        return back()->with('success', 'Active user safely terminated and anonymized. Tree structure preserved.');
     }
 
     public function awardOffer(Request $request, User $user)

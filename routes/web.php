@@ -62,6 +62,7 @@ Route::middleware(['auth', 'role:Agent,Admin'])->group(function () {
     Route::post('/agent/register-student', [StudentRegistrationController::class, 'store']);
     Route::get('/agent/pending-registrations', [StudentRegistrationController::class, 'index'])->name('agent.pending');
     Route::put('/agent/pending-registrations/{student}', [StudentRegistrationController::class, 'update'])->name('agent.student.update');
+    Route::delete('/agent/void-registration/{student}', [StudentRegistrationController::class, 'voidRegistration']);
     // Agent's Restricted Network List & Ledger
     Route::get('/agent/my-network', [MyNetworkController::class, 'index'])->name('agent.network');
     Route::get('/ledger', [LedgerController::class, 'index'])->name('ledger');
@@ -90,7 +91,6 @@ Route::middleware(['auth', 'role:Accountant,Admin,Manager'])->group(function () 
     Route::post('/accountant/mark-remainder-paid/{student}', [ApprovalController::class, 'markRemainderPaid']);
     // Generic Reject route handles both initial and balance rejections
     Route::post('/accountant/reject-student/{student}', [ApprovalController::class, 'rejectRegistration']);
-    Route::delete('/accountant/void-registration/{student}', [ApprovalController::class, 'voidRegistration']);
     // Payout Workflow
     Route::get('/accountant/eligible-payouts', [PayoutController::class, 'getEligibleAgents'])->name('accountant.payouts');
     Route::post('/accountant/submit-payouts', [PayoutController::class, 'submitRequests']);
