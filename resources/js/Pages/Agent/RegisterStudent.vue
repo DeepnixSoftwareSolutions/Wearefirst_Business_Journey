@@ -396,6 +396,7 @@ const submit = () => form.post('/agent/register-student');
                                 <div>
                                     <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Email Address</label>
                                     <input v-model="form.email" type="email" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-teal-500 focus:border-teal-500" required>
+                                    <span v-if="form.errors.email" class="text-xs text-red-600 font-bold mt-1 block">{{ form.errors.email }}</span>
                                 </div>
                                 <div>
                                     <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Phone Number</label>
@@ -415,6 +416,7 @@ const submit = () => form.post('/agent/register-student');
                                 <div>
                                     <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">NIC Number</label>
                                     <input v-model="form.nic" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-teal-500 focus:border-teal-500" required>
+                                    <span v-if="form.errors.nic" class="text-xs text-red-600 font-bold mt-1 block">{{ form.errors.nic }}</span>
                                 </div>
                             </div>
 

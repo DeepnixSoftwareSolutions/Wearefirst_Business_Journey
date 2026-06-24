@@ -39,12 +39,26 @@ class GroupServiceController extends Controller
     {
         if (!$node) return null;
 
-        // 1. Calculate how many matches have already occurred
-        $matches = min($node->left_points, $node->right_points);
+        $projectedIncome = $node->projected_income ?? 0;
+        
+        $carriedLeft = $node->left_points;
+        $carriedRight = $node->right_points;
 
-        // 2. Subtract the matches to find the remaining unmatched points on each side
-        $unmatchedLeft = $node->left_points - $matches;
-        $unmatchedRight = $node->right_points - $matches;
+        // Calculate surviving points based on tonight's projected payout consumption
+        if ($projectedIncome == 7500) {
+            // Hard Flush: 0 points survive
+            $carriedLeft = 0;
+            $carriedRight = 0;
+        } elseif ($projectedIncome == 5000) {
+            // Level 1: Consumes 2 pairs
+            $carriedLeft = max(0, $node->left_points - 2);
+            $carriedRight = max(0, $node->right_points - 2);
+        } elseif ($projectedIncome == 2500) {
+            // Level 0: Consumes 1 pair
+            $carriedLeft = max(0, $node->left_points - 1);
+            $carriedRight = max(0, $node->right_points - 1);
+        }
+        // If $projectedIncome == 0, nothing is consumed, original points carry over completely.
 
         return [
             'id' => $node->id,
@@ -59,13 +73,13 @@ class GroupServiceController extends Controller
             // Pass the node's graduation memory
             'current_pair_level' => $node->current_pair_level ?? 0,
             
-            // Financial Values (Only the UNMATCHED points * Rs 1250)
-            'left_value' => $unmatchedLeft * 1250,
-            'right_value' => $unmatchedRight * 1250,
+            // Financial Values (Surviving points * Rs 1250)
+            'left_value' => $carriedLeft * 1250,
+            'right_value' => $carriedRight * 1250,
             
-            'projected_income' => $node->projected_income ?? 0,
+            'projected_income' => $projectedIncome,
             
-            'pending_matches' => $matches
+            'pending_matches' => min($node->left_points, $node->right_points)
         ];
     }
 }
