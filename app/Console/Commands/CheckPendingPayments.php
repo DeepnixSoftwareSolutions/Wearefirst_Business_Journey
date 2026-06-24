@@ -17,11 +17,17 @@ class CheckPendingPayments extends Command
     {
         $this->info('Checking for due admission payments...');
 
+        // Force Carbon to use the correct timezone for accurate day calculations
+        $tz = 'Asia/Colombo';
+
         // 1. Send 10-Day Warnings
-        $warningDate = \Carbon\Carbon::now()->subDays(10)->toDateString();
+        $warningDate = Carbon::now($tz)->subDays(10)->toDateString();
+        
         $warnUsers = User::where('admission_fee_paid', '<', 15000)
                          ->whereDate('created_at', $warningDate)
                          ->where('is_held', false) 
+                         // Don't warn people who are just waiting on the Accountant
+                         ->where('admission_status', '!=', 'Pending Approval') 
                          ->get();
 
         foreach ($warnUsers as $user) {
@@ -30,10 +36,13 @@ class CheckPendingPayments extends Command
         }
 
         // 2. Process 14-Day Terminations
-        $cutoffDate = \Carbon\Carbon::now()->subDays(14)->toDateString();
+        $cutoffDate = Carbon::now($tz)->subDays(14)->toDateString();
+        
         $cutoffUsers = User::where('admission_fee_paid', '<', 15000)
                            ->whereDate('created_at', '<=', $cutoffDate)
                            ->where('admission_status', '!=', 'Overdue')
+                           // CRITICAL: Never cutoff a student who submitted a slip that hasn't been reviewed yet
+                           ->where('admission_status', '!=', 'Pending Approval')
                            ->get();
 
         foreach ($cutoffUsers as $user) {
@@ -54,7 +63,7 @@ class CheckPendingPayments extends Command
                 ]);
                 $this->error("Account Frozen & Anonymized (14-day cutoff): {$user->email}");
             } else {
-                // They never made it to the tree (Pending Payment, Rejected, Pending Approval)
+                // They never made it to the tree (Pending Payment or Rejected)
                 // Safely HARD DELETE to clean up the database.
                 $email = $user->email;
                 $user->delete();

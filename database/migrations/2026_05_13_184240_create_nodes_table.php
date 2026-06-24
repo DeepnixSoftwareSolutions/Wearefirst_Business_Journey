@@ -22,13 +22,15 @@ return new class extends Migration
             $table->integer('left_points')->default(0);
             $table->integer('right_points')->default(0);
 
-            // Level 0 = Has never paired. 
-            // Level 1 = Has hit 1:1 (needs 2:2 next).
-            // Level 2 = Has hit 2:2 (needs 3:3 next).
+            // Level 0 = Has never paired (Waiting for 1:1)
+            // Level 1 = Has hit 1:1 (Waiting for 2:2)
+            // Level 2 = Has hit 2:2 (Waiting for 3:3)
+            // Level 3 = Has hit 3:3 (Matured, loops at 3:3)
             $table->integer('current_pair_level')->default(0);
             
-            // Income Tracking (Node Specific)
-            $table->decimal('today_income_projected', 15, 2)->default(0.00);
+            // Daily Throttle Tracker
+            $table->date('last_payout_date')->nullable();
+            
             $table->decimal('node_cumulative_pending', 15, 2)->default(0.00);
             
             $table->timestamps();
