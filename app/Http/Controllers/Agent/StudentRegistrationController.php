@@ -53,8 +53,11 @@ class StudentRegistrationController extends Controller
             // Catch Manual Tree Coordinates
             'manual_parent_id' => 'nullable|exists:nodes,id',
             'manual_position' => 'nullable|in:Left,Right',
+        ], [
+            // custom messages
+            'email.unique' => "Can't process registration. The Email already exists",
+            'nic.unique' => "Can't process registration. The NIC already exists",
         ]);
-
         $sponsor = Auth::user();
 
         // Security Check: Are middle legs locked?

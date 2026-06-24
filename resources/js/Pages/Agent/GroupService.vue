@@ -110,7 +110,7 @@ const getActionableAdvice = (node) => {
                             </div>
                             <div class="flex flex-col">
                                 <span class="text-lg font-black text-slate-800 leading-none mb-1">Rs {{ node.left_value }}</span>
-                                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Unmatched Value</span>
+                                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Carried Over Value</span>
                             </div>
                         </div>
 
@@ -123,7 +123,7 @@ const getActionableAdvice = (node) => {
                             </div>
                             <div class="flex flex-col">
                                 <span class="text-lg font-black text-slate-800 leading-none mb-1">Rs {{ node.right_value }}</span>
-                                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Unmatched Value</span>
+                                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Carried Over Value</span>
                             </div>
                         </div>
 
