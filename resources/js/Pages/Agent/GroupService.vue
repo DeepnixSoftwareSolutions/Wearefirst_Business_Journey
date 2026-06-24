@@ -11,28 +11,30 @@ const getActionableAdvice = (node) => {
     const pairs = Math.min(left, right);
     const level = node.current_pair_level;
 
-    // 1. Cap Reached: Stop encouraging them to build this node today
-    if (pairs >= 3) {
-        return `🏆 Max daily payout reached! You've secured Rs 7500. Excess matching pairs will be flushed tonight, and remaining unmatched points carry over.`;
-    }
-
-    // 2. Determine Next Threshold based on their Graduation History
+    // 1. Determine Target based strictly on current level
     let targetPairs = 1;
-    if (level === 0) targetPairs = pairs + 1; // Can trigger 1, 2, or 3
-    if (level === 1) targetPairs = Math.max(2, pairs + 1); // Can trigger 2 or 3
-    if (level === 2) targetPairs = 3; // Must hit exactly 3
+    if (level === 1) targetPairs = 2;
+    if (level >= 2) targetPairs = 3; 
 
     const nextPayout = (targetPairs === 3) ? 7500 : (targetPairs === 2 ? 5000 : 2500);
+
+    // 2. Cap Reached: Stop encouraging them to build this node today
+    if (pairs >= targetPairs) {
+        if (targetPairs === 3) {
+            return `🏆 Max maturity reached! You've secured Rs 7500. ALL points will be hard-flushed tonight.`;
+        }
+        return `✅ Target reached! You've secured Rs ${nextPayout}. Excess points carry over to tomorrow. Focus on other nodes today!`;
+    }
 
     // 3. Balanced Status
     if (left === right) {
         if (left === 0) {
             if (level === 0) return `Lines are empty. Add 1 student to both sides to trigger your first Rs 2500 match!`;
-            if (level === 1) return `Level 1 reached! Add 2 students to both sides today to trigger a Rs 5000 match.`;
-            if (level === 2) return `Level 2 reached! Add 3 students to both sides today to trigger a Rs 7500 match.`;
+            if (level === 1) return `Level 1! Add 2 students to both sides to trigger your first Rs 5000 match.`;
+            if (level >= 2) return `Matured Level! Add 3 students to both sides to trigger a Rs 7500 match.`;
         }
         const needed = targetPairs - pairs;
-        return `Balanced at ${pairs} pair(s). You need ${needed} more pair(s) today to trigger a Rs ${nextPayout} payout!`;
+        return `Balanced at ${pairs} pair(s). You need ${needed} more pair(s) to trigger a Rs ${nextPayout} payout!`;
     }
     
     // 4. Unbalanced Status
@@ -46,12 +48,8 @@ const getActionableAdvice = (node) => {
     const neededOnStrong = Math.max(0, targetPairs - strongPoints);
 
     if (neededOnStrong > 0) {
-        // Example: Level 2 (Target 3). Node has 2 Left, 1 Right. 
-        // Need 2 on Right, 1 on Left.
         return `🔥 Push for the next level! Add ${neededOnWeak} to ${weakLeg} AND ${neededOnStrong} to ${strongLeg} to reach ${targetPairs} pairs and trigger a Rs ${nextPayout} match.`;
     } else {
-        // Example: Level 0 (Target 2). Node has 5 Left, 1 Right. 
-        // Strong is fine, just need 1 on Right.
         return `🔥 Strong ${strongLeg}! Add ${neededOnWeak} student(s) to the ${weakLeg} to hit ${targetPairs} pairs and trigger a Rs ${nextPayout} match.`;
     }
 };

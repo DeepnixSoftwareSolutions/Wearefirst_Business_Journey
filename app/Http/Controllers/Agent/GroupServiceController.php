@@ -19,9 +19,9 @@ class GroupServiceController extends Controller
         $subA = $nodes->get('Sub_A');
         $subB = $nodes->get('Sub_B');
 
-        $totalProjected = ($mainNode->today_income_projected ?? 0) 
-                        + ($subA->today_income_projected ?? 0) 
-                        + ($subB->today_income_projected ?? 0);
+        $totalProjected = ($mainNode->projected_income ?? 0) 
+                        + ($subA->projected_income ?? 0) 
+                        + ($subB->projected_income ?? 0);
 
         return Inertia::render('Agent/GroupService', [
             'networkData' => [
@@ -63,7 +63,7 @@ class GroupServiceController extends Controller
             'left_value' => $unmatchedLeft * 1250,
             'right_value' => $unmatchedRight * 1250,
             
-            'projected_income' => $node->today_income_projected ?? 0,
+            'projected_income' => $node->projected_income ?? 0,
             
             'pending_matches' => $matches
         ];

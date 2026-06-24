@@ -89,7 +89,7 @@ class NetworkTreeController extends Controller
                 'middle_legs_unlocked' => $isUnlocked,
                 'left_points' => $node->left_points,
                 'right_points' => $node->right_points,
-                'today_projected' => $node->today_income_projected ?? 0,
+                'today_projected' => $node->projected_income ?? 0,
                 'node_cumulative' => $node->node_cumulative_pending ?? 0,
                 'user_total_cumulative' => $node->account_type === 'Main' && $user ? $user->pending_payout_balance : null,
                 'admission_fee_paid' => $user ? (float) $user->admission_fee_paid : 0, 
