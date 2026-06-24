@@ -31,7 +31,7 @@
                 <div style="font-size: 12px; color: #64748b; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px;">
                     Assigned Student ID: WSRN<span style="color: #0284c7; font-size: 14px; background-color: #f0f9ff; padding: 2px 8px; border-radius: 4px; border: 1px solid #bae6fd;">{{ str_pad($student->member_id, 4, '0', STR_PAD_LEFT) }}</span>
                 </div>
-                <p style="color: #475569; font-size: 15px; margin-bottom: 0;">Congratulations on taking your first step! Your sponsoring agent has successfully submitted your registration profile into our secure network.</p>
+                <p style="color: #475569; font-size: 15px; margin-bottom: 0;">Congratulations on taking your first step! Wearefirst Business Journey Crypto Trading Course Your sponsoring agent has successfully submitted your registration profile into our secure network.</p>
 
                 <div class="info-box">
                     <strong>What happens next?</strong><br>
